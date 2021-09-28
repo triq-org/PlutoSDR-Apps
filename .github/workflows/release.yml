@@ -1,0 +1,37 @@
+name: Create release
+on: workflow_dispatch
+
+jobs:
+  release_job:
+    runs-on: ubuntu-latest
+    name: Build Release
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build
+        # note: crossbuild-essential-armhf on 18.04 is GCC-7.2, on 20.04 GCC-9.2
+        # GCC-7.2 has GLIBC trouble on SoapyRemote avahi linking
+        # GCC-9.2 has stropts.h trouble with socat
+        run: |
+          sudo apt-get install -y git rsync gcc-8-arm-linux-gnueabihf g++-8-arm-linux-gnueabihf cmake scons autoconf bison yodl
+          sudo update-alternatives --install /usr/bin/arm-linux-gnueabihf-gcc arm-linux-gnueabihf-gcc /usr/bin/arm-linux-gnueabihf-gcc-8 100 --slave /usr/bin/arm-linux-gnueabihf-g++ arm-linux-gnueabihf-g++ /usr/bin/arm-linux-gnueabihf-g++-8
+          ./build.sh
+      - name: Get Release tag
+        run: echo "RELEASE_VERSION=$(date +%F)" >> $GITHUB_ENV
+      - uses: actions/create-release@v1
+        id: create_release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.RELEASE_VERSION }}
+          release_name: Release ${{ env.RELEASE_VERSION }}
+          body_path: RELEASE-INFO.md
+          draft: true
+          prerelease: true
+      - uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: plutosdr-apps.tar.gz
+          asset_name: plutosdr-apps-${{ env.RELEASE_VERSION }}.tar.gz
+          asset_content_type: application/gzip
