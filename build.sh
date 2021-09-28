@@ -51,11 +51,10 @@ export toolchain="${toolchain:-${builddir}/Toolchain-arm-linux-gnueabi.cmake}"
 
 [ -d SoapySDR ] || git clone https://github.com/pothosware/SoapySDR.git
 pushd SoapySDR
-git checkout feat-ratefmt
 echo -n '- SoapySDR: ' >>"${releaseinfo}"
 git describe --tags --first-parent --abbrev=7 --long --dirty --always >>"${releaseinfo}"
 rm -rf build ; mkdir build ; pushd build
-cmake -DCMAKE_TOOLCHAIN_FILE="${toolchain}" -DCMAKE_INSTALL_PREFIX=/usr -DENABLE_PYTHON=OFF -DENABLE_PYTHON3=OFF .. && make VERBOSE=1 && make install
+cmake -DCMAKE_TOOLCHAIN_FILE="${toolchain}" -DCMAKE_INSTALL_PREFIX=/usr -DENABLE_PYTHON=OFF -DENABLE_PYTHON3=OFF .. && make && make install
 popd ; popd
 
 [ -d SoapyPlutoSDR ] || git clone https://github.com/pothosware/SoapyPlutoSDR.git
@@ -63,7 +62,7 @@ pushd SoapyPlutoSDR
 echo -n '- SoapyPlutoSDR: ' >>"${releaseinfo}"
 git describe --tags --first-parent --abbrev=7 --long --dirty --always >>"${releaseinfo}"
 rm -rf build ; mkdir build ; pushd build
-cmake -DCMAKE_TOOLCHAIN_FILE="${toolchain}" -DCMAKE_INSTALL_PREFIX=/usr -DSoapySDR_DIR="${stagedir}/share/cmake/SoapySDR" .. && make VERBOSE=1 && make install
+cmake -DCMAKE_TOOLCHAIN_FILE="${toolchain}" -DCMAKE_INSTALL_PREFIX=/usr -DSoapySDR_DIR="${stagedir}/share/cmake/SoapySDR" .. && make && make install
 popd ; popd
 
 [ -d SoapyRemote ] || git clone https://github.com/pothosware/SoapyRemote.git
@@ -71,7 +70,7 @@ pushd SoapyRemote
 echo -n '- SoapyRemote: ' >>"${releaseinfo}"
 git describe --tags --first-parent --abbrev=7 --long --dirty --always >>"${releaseinfo}"
 rm -rf build ; mkdir build ; pushd build
-cmake -DCMAKE_TOOLCHAIN_FILE="${toolchain}" -DCMAKE_INSTALL_PREFIX=/usr -DSoapySDR_DIR="${stagedir}/share/cmake/SoapySDR" .. && make VERBOSE=1 && make install
+cmake -DCMAKE_TOOLCHAIN_FILE="${toolchain}" -DCMAKE_INSTALL_PREFIX=/usr -DSoapySDR_DIR="${stagedir}/share/cmake/SoapySDR" .. && make && make install
 popd ; popd
 
 [ -d rtl_433 ] || git clone https://github.com/merbanan/rtl_433.git
@@ -79,7 +78,7 @@ pushd rtl_433
 echo -n '- rtl_433: ' >>"${releaseinfo}"
 git describe --tags --first-parent --abbrev=7 --long --dirty --always >>"${releaseinfo}"
 rm -rf build ; mkdir build ; pushd build
-cmake -DENABLE_RTLSDR=OFF -DENABLE_SOAPYSDR=ON -DENABLE_OPENSSL=OFF -DCMAKE_TOOLCHAIN_FILE="${toolchain}" -DCMAKE_INSTALL_PREFIX=/usr -DSoapySDR_DIR="${stagedir}/share/cmake/SoapySDR" .. && make VERBOSE=1 && make install
+cmake -DENABLE_RTLSDR=OFF -DENABLE_SOAPYSDR=ON -DENABLE_OPENSSL=OFF -DCMAKE_TOOLCHAIN_FILE="${toolchain}" -DCMAKE_INSTALL_PREFIX=/usr -DSoapySDR_DIR="${stagedir}/share/cmake/SoapySDR" .. && make && make install
 popd ; popd
 
 [ -d rx_tools ] || git clone https://github.com/rxseger/rx_tools.git
@@ -87,7 +86,7 @@ pushd rx_tools
 echo -n '- rx_tools: ' >>"${releaseinfo}"
 git describe --tags --first-parent --abbrev=7 --long --dirty --always >>"${releaseinfo}"
 rm -rf build ; mkdir build ; pushd build
-cmake -DCMAKE_TOOLCHAIN_FILE="${toolchain}" -DCMAKE_INSTALL_PREFIX=/usr -DSoapySDR_DIR="${stagedir}/share/cmake/SoapySDR" .. && make VERBOSE=1 && make install
+cmake -DCMAKE_TOOLCHAIN_FILE="${toolchain}" -DCMAKE_INSTALL_PREFIX=/usr -DSoapySDR_DIR="${stagedir}/share/cmake/SoapySDR" .. && make && make install
 popd ; popd
 
 [ -d tx_tools ] || git clone https://github.com/triq-org/tx_tools.git
@@ -95,7 +94,7 @@ pushd tx_tools
 echo -n '- tx_tools: ' >>"${releaseinfo}"
 git describe --tags --first-parent --abbrev=7 --long --dirty --always >>"${releaseinfo}"
 rm -rf build ; mkdir build ; pushd build
-cmake -DCMAKE_TOOLCHAIN_FILE="${toolchain}" -DCMAKE_INSTALL_PREFIX=/usr -DSoapySDR_DIR="${stagedir}/share/cmake/SoapySDR" .. && make VERBOSE=1 && make install
+cmake -DCMAKE_TOOLCHAIN_FILE="${toolchain}" -DCMAKE_INSTALL_PREFIX=/usr -DSoapySDR_DIR="${stagedir}/share/cmake/SoapySDR" .. && make && make install
 popd ; popd
 
 [ -d chrony ] || git clone https://git.tuxfamily.org/chrony/chrony.git
