@@ -3,17 +3,27 @@ on: workflow_dispatch
 
 jobs:
   release_job:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     name: Build Release
     steps:
       - uses: actions/checkout@v2
       - name: Build
-        # note: crossbuild-essential-armhf on 18.04 is GCC-7.2, on 20.04 GCC-9.2
-        # GCC-7.2 has GLIBC trouble on SoapyRemote avahi linking
-        # GCC-9.2 has stropts.h trouble with socat
+        # crossbuild-essential-armhf on 22.04 is GCC-11.2 (also has 10.5, 9.5)
+        # on 20.04 GCC-9.2 (also has 8), on 18.04 is GCC-7.2
+        # crossbuild-essential-armhf on Bookworm is GCC-12.2 (also has 11.3)
+        # on Bullseye GCC-10.3 (also has 9), on Buster is GCC-8.3
+        # note: GCC-9+ currently do not work with (GCC 7.3 built) sysroot 0.38.
+        # Note the GLIBC (libc6-dev-armhf-cross) version mismatch:
+        # buster has 2.28, bullseye has 2.31, bookworm has 2.36
+        # focal (20.04) has 2.31, jammy (22.04) has 2.35
+        # note: GCC-7.2 has GLIBC trouble on SoapyRemote avahi linking
+        # run: |
+        #   sudo apt-get install -y git rsync gcc-8-arm-linux-gnueabihf g++-8-arm-linux-gnueabihf cmake scons autoconf bison yodl python3-distutils
+        #   sudo update-alternatives --install /usr/bin/arm-linux-gnueabihf-gcc arm-linux-gnueabihf-gcc /usr/bin/arm-linux-gnueabihf-gcc-8 100 --slave /usr/bin/arm-linux-gnueabihf-g++ arm-linux-gnueabihf-g++ /usr/bin/arm-linux-gnueabihf-g++-8
         run: |
-          sudo apt-get install -y git rsync gcc-8-arm-linux-gnueabihf g++-8-arm-linux-gnueabihf cmake scons autoconf bison yodl
-          sudo update-alternatives --install /usr/bin/arm-linux-gnueabihf-gcc arm-linux-gnueabihf-gcc /usr/bin/arm-linux-gnueabihf-gcc-8 100 --slave /usr/bin/arm-linux-gnueabihf-g++ arm-linux-gnueabihf-g++ /usr/bin/arm-linux-gnueabihf-g++-8
+          sudo apt-get install -y git rsync cmake scons autoconf bison yodl python3-distutils
+          wget https://releases.linaro.org/components/toolchain/binaries/7.3-2018.05/arm-linux-gnueabihf/gcc-linaro-7.3.1-2018.05-x86_64_arm-linux-gnueabihf.tar.xz
+          tar xf gcc-linaro-7.3.1-2018.05-x86_64_arm-linux-gnueabihf.tar.xz
           ./build.sh
       - name: Get Release tag
         run: echo "RELEASE_VERSION=$(date +%F)" >> $GITHUB_ENV
